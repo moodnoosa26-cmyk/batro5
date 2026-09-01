@@ -1,0 +1,48 @@
+import { Review } from '../types';
+
+export const CUSTOMER_REVIEWS: Review[] = [
+  {
+    id: 'rev-1',
+    authorName: 'م. أحمد الشناوي',
+    location: 'الدقي، شارع مصدق',
+    rating: 5,
+    comment: 'أقسم بالله مبالغة الاسم حقيقية! طاجن بطروخ الملكي وصاروخ الجمبري خلاني طاير في الفضاء 🚀. الأكل واصل سخن ومتبل بالملي والجمبري فريش بجد!',
+    dishOrdered: 'طاجن بطروخ الملكي بالكريمة',
+    date: 'منذ يومين',
+    verifiedOrder: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+  },
+  {
+    id: 'rev-2',
+    authorName: 'د. ياسمين النجار',
+    location: 'المهندسين، ميدان لبنان',
+    rating: 5,
+    comment: 'طلبنا صينية ملوك الدقي لعزومة عائلية، شرفتنا بجد قدام أهلنا. السمك الدنيس كان طازة والتسوية زيت وليمون مظبوطة بالظبط. والدليفري جه قبل الميعاد بربع ساعة!',
+    dishOrdered: 'صينية ملوك الدقي والجيزة',
+    date: 'منذ 4 أيام',
+    verifiedOrder: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
+  },
+  {
+    id: 'rev-3',
+    authorName: 'كابتن طارق عبد العزيز',
+    location: 'الجيزة، شارع الهرم',
+    rating: 5,
+    comment: 'أحسن ساندوتش سي فود كلته في مصر بدون مبالغة! خلطة البطارخ في الساندوتش بتودي في حتة تانية خالص. وشوربة السي فود جرعة طاقة غير طبيعية.',
+    dishOrdered: 'ساندوتش صاروخ بطروخ العملاق',
+    date: 'منذ أسبوع',
+    verifiedOrder: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=150&q=80',
+  },
+  {
+    id: 'rev-4',
+    authorName: 'سارة مراد (Food Blogger)',
+    location: 'القاهرة / الجيزة',
+    rating: 5,
+    comment: 'التجربة 10/10! ملوخية الجمبري بطشتها الريحة وصلت أول الشارع، وسرعة الطلب عن طريق الواتساب مريحة جداً وبدون تعقيد. مطعم هيعمل قلق في الدقي!',
+    dishOrdered: 'ملوخية بالجمبري + ساندوتش حواوشي سي فود',
+    date: 'منذ أسبوعين',
+    verifiedOrder: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80',
+  },
+];
