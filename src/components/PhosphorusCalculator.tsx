@@ -78,7 +78,7 @@ export const PhosphorusCalculator: React.FC<PhosphorusCalculatorProps> = ({
     const text = encodeURIComponent(
       `يا بطروخ! 🚀 حسبت جرعة الفسفور في الموقع وطلعت لي الوجبة المثالية: (${rec.dish.name} - سعرها ${rec.dish.price} ج). عايز أطلبها دليفري للدقي/الجيزة دلوقتي! 🔥`
     );
-    window.open(`https://wa.me/201023456789?text=${text}`, '_blank');
+    window.open(`https://wa.me/201012560054?text=${text}`, '_blank');
   };
 
   return (

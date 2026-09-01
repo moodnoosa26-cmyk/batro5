@@ -5,11 +5,10 @@ import { SocialLinks } from './SocialLinks';
 
 interface FooterProps {
   onLogoClick?: () => void;
-  logoClickCount?: number;
   onOpenAdmin?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onLogoClick, logoClickCount = 0, onOpenAdmin }) => {
+export const Footer: React.FC<FooterProps> = ({ onLogoClick, onOpenAdmin }) => {
   return (
     <footer className="bg-[#030712] border-t border-white/5 text-white/70 text-sm pb-24 lg:pb-12 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-12">
@@ -24,7 +23,6 @@ export const Footer: React.FC<FooterProps> = ({ onLogoClick, logoClickCount = 0,
                 size="md"
                 showSubtitle={true}
                 onClick={onLogoClick}
-                clickCount={logoClickCount}
               />
             </div>
 
@@ -86,8 +84,8 @@ export const Footer: React.FC<FooterProps> = ({ onLogoClick, logoClickCount = 0,
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
-                <a href="tel:01023456789" className="text-white font-bold hover:text-orange-400 font-mono">
-                  01023456789 (الخط الساخن)
+                <a href="tel:+201012560054" className="text-white font-bold hover:text-orange-400 font-mono">
+                  +201012560054 (الخط الساخن)
                 </a>
               </div>
               <div className="flex items-center gap-2">
@@ -104,7 +102,7 @@ export const Footer: React.FC<FooterProps> = ({ onLogoClick, logoClickCount = 0,
                   className="flex items-center gap-1 text-[11px] text-white/30 hover:text-orange-400 transition-colors"
                 >
                   <Shield className="w-3 h-3" />
-                  <span>دخول الإدارة (أو اضغط اللوجو 5 مرات)</span>
+                  <span>لوحة الإدارة</span>
                 </button>
               </div>
             )}

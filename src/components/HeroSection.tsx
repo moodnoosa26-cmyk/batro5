@@ -17,7 +17,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     const text = encodeURIComponent(
       'يا هلا بملوك السي فود! 🦐 عايز أطلب أوردر صاروخ من مطعم بطروخ في الدقي. ايه العروض المميزة المتاحة دلوقتي؟ 🔥'
     );
-    window.open(`https://wa.me/201023456789?text=${text}`, '_blank');
+    window.open(`https://wa.me/201012560054?text=${text}`, '_blank');
   };
 
   return (

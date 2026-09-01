@@ -13,7 +13,6 @@ export const BatroukhLogo: React.FC<BatroukhLogoProps> = ({
   size = 'md',
   showSubtitle = true,
   onClick,
-  clickCount = 0,
 }) => {
   const sizeClasses = {
     sm: 'w-10 h-10',
@@ -26,7 +25,7 @@ export const BatroukhLogo: React.FC<BatroukhLogoProps> = ({
     <div 
       onClick={onClick}
       className={`inline-flex items-center gap-3 cursor-pointer select-none transition-transform duration-200 active:scale-95 group ${className}`}
-      title="مطعم بطروخ للمأكولات البحرية - بطروخ هيخليك صاروخ 🚀 (اضغط 5 مرات لفتح لوحة التحكم)"
+      title="مطعم بطروخ للمأكولات البحرية - بطروخ هيخليك صاروخ 🚀"
     >
       {/* Visual Logo Emblem Container */}
       <div className={`relative ${sizeClasses[size]} shrink-0 rounded-full p-1 bg-gradient-to-tr from-orange-600 via-amber-500 to-red-600 shadow-[0_0_20px_rgba(234,88,12,0.4)] group-hover:shadow-[0_0_30px_rgba(234,88,12,0.7)] transition-all duration-300`}>
@@ -108,13 +107,6 @@ export const BatroukhLogo: React.FC<BatroukhLogoProps> = ({
               هيخليك صاروخ 🚀
             </text>
           </svg>
-          
-          {/* Secret Tap Feedback Badge (if tapped recently) */}
-          {clickCount > 0 && clickCount < 5 && (
-            <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-orange-400 font-bold text-xs animate-in zoom-in">
-              {clickCount}/5 🔐
-            </div>
-          )}
         </div>
 
         {/* Pulse dot */}

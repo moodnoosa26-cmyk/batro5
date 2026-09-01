@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "Dish": {
+      "title": "Dish",
+      "description": "Menu items available for ordering at Batroukh Seafood",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "originalPrice": { "type": "number" },
+        "description": { "type": "string" },
+        "image": { "type": "string" },
+        "isAvailable": { "type": "boolean" },
+        "isPopular": { "type": "boolean" },
+        "isSpicy": { "type": "boolean" },
+        "prepTimeMinutes": { "type": "number" },
+        "servesCount": { "type": "number" },
+        "phosphorusLevel": { "type": "number" },
+        "badge": { "type": "string" },
+        "cookingOptions": { "type": "array", "items": { "type": "object" } },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "category", "price", "description", "image"]
+    },
+    "StoreSettings": {
+      "title": "StoreSettings",
+      "description": "Global restaurant settings for Batroukh Seafood",
+      "type": "object",
+      "properties": {
+        "restaurantNameAr": { "type": "string" },
+        "sloganAr": { "type": "string" },
+        "hotline": { "type": "string" },
+        "whatsappPhone": { "type": "string" },
+        "addressAr": { "type": "string" },
+        "googleMapsUrl": { "type": "string" },
+        "isOpen24Hours": { "type": "boolean" },
+        "isStoreOpen": { "type": "boolean" },
+        "deliveryFee": { "type": "number" },
+        "taxOrServiceRate": { "type": "number" },
+        "bannerAnnouncement": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["hotline", "whatsappPhone", "deliveryFee"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer orders placed via Batroukh Seafood platform",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "deliveryAddress": { "type": "string" },
+        "orderType": { "type": "string" },
+        "orderNotes": { "type": "string" },
+        "scheduledTimeSlot": { "type": "string" },
+        "items": { "type": "array", "items": { "type": "object" } },
+        "subtotal": { "type": "number" },
+        "discountAmount": { "type": "number" },
+        "deliveryFee": { "type": "number" },
+        "netTotal": { "type": "number" },
+        "currentStage": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "createdAtTimestamp": { "type": "number" }
+      },
+      "required": ["id", "orderNumber", "customerName", "customerPhone", "items", "netTotal"]
+    }
+  },
+  "firestore": {
+    "/dishes/{dishId}": {
+      "entity": "Dish",
+      "description": "Restaurant menu items synchronized across all users and browsers"
+    },
+    "/settings/{settingId}": {
+      "entity": "StoreSettings",
+      "description": "Restaurant store configuration synchronized across all browsers"
+    },
+    "/orders/{orderId}": {
+      "entity": "Order",
+      "description": "Orders submitted by customers and tracked in real-time"
+    }
+  }
+}

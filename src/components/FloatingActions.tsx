@@ -21,7 +21,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     const text = encodeURIComponent(
       'يا هلا بملوك السي فود! 🦐 عايز أطلب أوردر صاروخ من مطعم بطروخ في الدقي. ايه العروض المميزة المتاحة دلوقتي؟ 🔥'
     );
-    window.open(`https://wa.me/201023456789?text=${text}`, '_blank');
+    window.open(`https://wa.me/201012560054?text=${text}`, '_blank');
   };
 
   return (
@@ -46,14 +46,14 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
         {/* Floating Call Button */}
         <a
           id="floating-call-btn-desktop"
-          href="tel:01023456789"
+          href="tel:+201012560054"
           className="flex items-center gap-2.5 px-5 py-3 rounded-full bg-[#0A1128]/90 hover:bg-[#0A1128] text-white font-bold text-sm border border-white/10 backdrop-blur-md shadow-2xl transition-all hover:scale-105"
-          title="اتصل بالخط الساخن: 01023456789"
+          title="اتصل بالخط الساخن: +201012560054"
         >
           <div className="w-8 h-8 rounded-full bg-orange-600/20 flex items-center justify-center text-orange-400">
             <Phone className="w-4 h-4 text-orange-500" />
           </div>
-          <span>01023456789</span>
+          <span>+201012560054</span>
         </a>
 
         {/* Floating WhatsApp Button */}
@@ -92,7 +92,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           {/* 1. Quick Call */}
           <a
             id="mobile-sticky-call-btn"
-            href="tel:01023456789"
+            href="tel:+201012560054"
             className="flex flex-col items-center justify-center py-2 px-1 rounded-2xl bg-white/5 border border-white/10 text-white/80 active:bg-white/10"
           >
             <Phone className="w-4 h-4 text-orange-500 mb-0.5" />

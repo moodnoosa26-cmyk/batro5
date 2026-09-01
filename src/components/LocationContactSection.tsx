@@ -25,7 +25,7 @@ export const LocationContactSection: React.FC = () => {
 
   const handleShareLocationWhatsApp = () => {
     const text = encodeURIComponent(
-      `📍 لوكيشن مطعم بطروخ للمأكولات البحرية في الدقي (بطروخ هيخليك صاروخ):\n${addressText}\nرابط خرائط جوجل: ${googleMapsUrl}\nالخط الساخن: 01023456789`
+      `📍 لوكيشن مطعم بطروخ للمأكولات البحرية في الدقي (بطروخ هيخليك صاروخ):\n${addressText}\nرابط خرائط جوجل: ${googleMapsUrl}\nالخط الساخن: +201012560054`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
@@ -35,7 +35,7 @@ export const LocationContactSection: React.FC = () => {
     const text = encodeURIComponent(
       `رسالة استفسار وحجز من الموقع 🦐:\n- الاسم: ${contactName}\n- التليفون: ${contactPhone}\n- الموضوع: ${contactTopic}\n- التفاصيل: ${contactMsg}`
     );
-    window.open(`https://wa.me/201023456789?text=${text}`, '_blank');
+    window.open(`https://wa.me/201012560054?text=${text}`, '_blank');
   };
 
   return (
@@ -123,8 +123,8 @@ export const LocationContactSection: React.FC = () => {
                   <span>الخط الساخن والطلبات:</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <a href="tel:01023456789" className="text-white font-bold text-lg hover:text-orange-400 transition-colors">
-                    01023456789 📞
+                  <a href="tel:+201012560054" className="text-white font-bold text-lg hover:text-orange-400 transition-colors">
+                    +201012560054 📞
                   </a>
                   <button
                     onClick={handleCopyAddress}

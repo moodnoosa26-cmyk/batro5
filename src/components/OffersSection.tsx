@@ -66,7 +66,7 @@ export const OffersSection: React.FC<OffersSectionProps> = ({
     const text = encodeURIComponent(
       `يا مطعم بطروخ! 🚀 عايز أطلب (${offer.title}) بسعر العرض الخاص ${offer.price} ج (بدلاً من ${offer.oldPrice} ج). كود الخصم: ${offer.couponCode || 'SAROOKH22'}. عنواني في الدقي/الجيزة.`
     );
-    window.open(`https://wa.me/201023456789?text=${text}`, '_blank');
+    window.open(`https://wa.me/201012560054?text=${text}`, '_blank');
   };
 
   return (

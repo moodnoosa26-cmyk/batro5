@@ -132,7 +132,7 @@ export const OrderStatusModal: React.FC<OrderStatusModalProps> = ({
     const msg = encodeURIComponent(
       `مساء الخير يا كابتن، بخصوص أوردر مطعم بطروخ رقم #${order.orderNumber} باسم ${order.customerName}.. حابب أتابع موقع الوصول.`
     );
-    window.open(`https://wa.me/201023456789?text=${msg}`, '_blank');
+    window.open(`https://wa.me/201012560054?text=${msg}`, '_blank');
   };
 
   return (
@@ -324,7 +324,7 @@ export const OrderStatusModal: React.FC<OrderStatusModalProps> = ({
                   <span>واتساب الكابتن</span>
                 </button>
                 <a
-                  href="tel:01023456789"
+                  href="tel:+201012560054"
                   className="py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <Phone className="w-3.5 h-3.5" />

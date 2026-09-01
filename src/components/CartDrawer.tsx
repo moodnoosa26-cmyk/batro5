@@ -151,7 +151,7 @@ ${appliedDiscount > 0 ? `- الخصم (${appliedDiscount}%): -${discountAmount} 
 _بطروخ هيخليك صاروخ! برجاء تأكيد الطلب والموعد المجدول._`;
 
     const encoded = encodeURIComponent(fullMessage);
-    const whatsappUrl = `https://wa.me/201023456789?text=${encoded}`;
+    const whatsappUrl = `https://wa.me/201012560054?text=${encoded}`;
 
     confetti({
       particleCount: 80,

@@ -61,7 +61,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
     const text = encodeURIComponent(
       `يا بطروخ! 🚀 عايز أطلب صنف: (${dish.name} - ${dish.price} ج) منيو الدقي. من فضلك عرفني التوصيل هياخد وقت قد ايه؟`
     );
-    window.open(`https://wa.me/201023456789?text=${text}`, '_blank');
+    window.open(`https://wa.me/201012560054?text=${text}`, '_blank');
   };
 
   return (

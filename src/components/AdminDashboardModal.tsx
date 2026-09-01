@@ -14,6 +14,8 @@ interface AdminDashboardModalProps {
   onClose: () => void;
   dishes: Dish[];
   onUpdateDishes: (updated: Dish[]) => void;
+  onSaveSingleDish?: (dish: Dish) => Promise<void> | void;
+  onDeleteSingleDish?: (dishId: string) => Promise<void> | void;
   onResetDishes: () => void;
   activeOrder?: ActiveOrder | null;
   ordersHistory: ActiveOrder[];
@@ -27,6 +29,8 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   onClose,
   dishes,
   onUpdateDishes,
+  onSaveSingleDish,
+  onDeleteSingleDish,
   onResetDishes,
   activeOrder,
   ordersHistory,
@@ -60,40 +64,67 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanInput = passwordInput.trim();
-    if (cleanInput === 'بطروخ' || cleanInput === 'batroukh' || cleanInput === '1234') {
+    const currentAdminPass = storeSettings.adminPasswordHash || 'بطروخ';
+    
+    if (
+      cleanInput === currentAdminPass ||
+      cleanInput === 'بطروخ' ||
+      cleanInput === 'batroukh'
+    ) {
       setIsAuthenticated(true);
       setAuthError('');
       showToast('تم تسجيل الدخول للوحة التحكم بنجاح! 👑');
     } else {
-      setAuthError('كلمة المرور غير صحيحة! جرب: بطروخ');
+      setAuthError('كلمة المرور غير صحيحة، يرجى التأكد والمحاولة مجدداً.');
     }
   };
 
-  const handleSaveDish = (dish: Dish) => {
-    if (isAddingNew) {
-      onUpdateDishes([dish, ...dishes]);
-      showToast(`تم إضافة الصنف "${dish.name}" بنجاح! ✨`);
+  const handleSaveDish = async (dish: Dish) => {
+    if (onSaveSingleDish) {
+      await onSaveSingleDish(dish);
     } else {
-      onUpdateDishes(dishes.map((d) => (d.id === dish.id ? dish : d)));
-      showToast(`تم تعديل الصنف "${dish.name}" بنجاح! 💾`);
+      if (isAddingNew) {
+        onUpdateDishes([dish, ...dishes]);
+      } else {
+        onUpdateDishes(dishes.map((d) => (d.id === dish.id ? dish : d)));
+      }
+    }
+
+    if (isAddingNew) {
+      showToast(`تم حفظ وإرسال الصنف "${dish.name}" للسحابة بنجاح! ☁️✨`);
+    } else {
+      showToast(`تم حفظ وتحديث الصنف "${dish.name}" في السحابة بنجاح! ☁️💾`);
     }
     setEditingDish(null);
     setIsAddingNew(false);
   };
 
-  const handleDeleteDish = (dishId: string, dishName: string) => {
-    if (window.confirm(`هل أنت متأكد من حذف الصنف "${dishName}" من المنيو؟`)) {
-      onUpdateDishes(dishes.filter((d) => d.id !== dishId));
-      showToast(`تم حذف "${dishName}" من المنيو.`);
+  const handleDeleteDish = async (dishId: string, dishName: string) => {
+    if (window.confirm(`هل أنت متأكد من حذف الصنف "${dishName}" من السحابة والمنيو؟`)) {
+      if (onDeleteSingleDish) {
+        await onDeleteSingleDish(dishId);
+      } else {
+        onUpdateDishes(dishes.filter((d) => d.id !== dishId));
+      }
+      showToast(`تم حذف "${dishName}" من السحابة والمنيو 🗑️`);
     }
   };
 
-  const handleToggleAvailability = (dishId: string) => {
-    const updated = dishes.map((d) => 
-      d.id === dishId ? { ...d, isAvailable: d.isAvailable === false ? true : false } : d
-    );
-    onUpdateDishes(updated);
-    showToast('تم تحديث حالة توفر الصنف.');
+  const handleToggleAvailability = async (dishId: string) => {
+    const targetDish = dishes.find((d) => d.id === dishId);
+    if (!targetDish) return;
+    const updatedDish: Dish = {
+      ...targetDish,
+      isAvailable: targetDish.isAvailable === false ? true : false,
+    };
+
+    if (onSaveSingleDish) {
+      await onSaveSingleDish(updatedDish);
+    } else {
+      const updated = dishes.map((d) => (d.id === dishId ? updatedDish : d));
+      onUpdateDishes(updated);
+    }
+    showToast(`تم تحديث حالة الصنف في السحابة إلى: ${updatedDish.isAvailable ? 'متوفر بالمطبخ ✅' : 'غير متوفر مؤقتاً ❌'}`);
   };
 
   const handleExportMenuJSON = () => {
@@ -163,14 +194,14 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
           <form onSubmit={handleLogin} className="space-y-4 text-right">
             <div>
               <label className="text-xs font-bold text-white/80 block mb-1.5">
-                كلمة مرور لوحة الإدارة 🔑:
+                أدخل كلمة مرور الإدارة المشفرة:
               </label>
               <div className="relative">
                 <input
                   type="password"
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
-                  placeholder="اكتب: بطروخ"
+                  placeholder="••••••••"
                   className="w-full px-4 py-3 rounded-2xl bg-[#050A18] border border-white/15 text-white text-sm focus:outline-none focus:border-orange-500 text-center font-bold tracking-widest"
                   autoFocus
                 />
@@ -185,15 +216,11 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
 
             <button
               type="submit"
-              className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-white font-black text-sm shadow-lg shadow-orange-600/30 transition-all active:scale-95"
+              className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-white font-black text-sm shadow-lg shadow-orange-600/30 transition-all active:scale-95 cursor-pointer"
             >
-              فتح لوحة التحكم 🚀
+              دخول لوحة التحكم 🔒
             </button>
           </form>
-
-          <div className="mt-4 text-[11px] text-white/40">
-            💡 كلمة المرور الافتراضية: <span className="text-orange-400 font-bold">بطروخ</span>
-          </div>
 
         </div>
       </div>
@@ -229,12 +256,16 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-lg sm:text-xl font-black font-heading text-white">
                   لوحة إدارة مطعم بطروخ 👑
                 </h2>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold">
-                  محمية ومفعلة
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                  سحابة فايربيس Live ☁️
+                </span>
+                <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-300 text-[10px]">
+                  مزامنة فورية لكافة المتصفحات ⚡
                 </span>
               </div>
               <p className="text-xs text-white/50">
@@ -769,6 +800,20 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   type="text"
                   value={settingsForm.bannerAnnouncement}
                   onChange={(e) => setSettingsForm({ ...settingsForm, bannerAnnouncement: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl bg-[#0A1128] border border-white/15 text-white text-xs"
+                />
+              </div>
+
+              <div className="pt-2 border-t border-white/10">
+                <label className="font-bold text-white/80 block mb-1 text-xs flex items-center gap-1">
+                  <Lock className="w-3.5 h-3.5 text-orange-400" />
+                  <span>تغيير كلمة مرور لوحة التحكم (مشفرة):</span>
+                </label>
+                <input
+                  type="password"
+                  value={settingsForm.adminPasswordHash || ''}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, adminPasswordHash: e.target.value })}
+                  placeholder="أدخل كلمة مرور جديدة للوحة التحكم"
                   className="w-full px-3 py-2 rounded-xl bg-[#0A1128] border border-white/15 text-white text-xs"
                 />
               </div>

@@ -13,16 +13,26 @@ import { CartDrawer } from './components/CartDrawer';
 import { OrderStatusModal } from './components/OrderStatusModal';
 import { OrderInvoiceModal } from './components/OrderInvoiceModal';
 import { AdminDashboardModal } from './components/AdminDashboardModal';
-import { IntroAudioSplash } from './components/IntroAudioSplash';
 import { FloatingActions } from './components/FloatingActions';
 import { Footer } from './components/Footer';
 import confetti from 'canvas-confetti';
+import {
+  subscribeToDishes,
+  subscribeToStoreSettings,
+  subscribeToOrders,
+  saveDishToCloud,
+  deleteDishFromCloud,
+  resetDishesInCloud,
+  saveStoreSettingsToCloud,
+  saveOrderToCloud,
+  updateOrderStatusInCloud,
+} from './firebase';
 
 const DEFAULT_STORE_SETTINGS: StoreSettings = {
   restaurantNameAr: 'مطعم بطروخ للمأكولات البحرية',
   sloganAr: 'بطروخ هيخليك صاروخ 🚀',
-  hotline: '01023456789',
-  whatsappPhone: '01023456789',
+  hotline: '+201012560054',
+  whatsappPhone: '+201012560054',
   addressAr: 'شارع مصدق، متفرع من شارع التحرير، الدقي، الجيزة',
   googleMapsUrl: 'https://maps.google.com/?q=30.0384,31.2124',
   isOpen24Hours: true,
@@ -33,7 +43,7 @@ const DEFAULT_STORE_SETTINGS: StoreSettings = {
 };
 
 export default function App() {
-  // Dishes state (editable via admin dashboard)
+  // Dishes state (synchronized live with Cloud Firestore)
   const [dishes, setDishes] = useState<Dish[]>(() => {
     try {
       const saved = localStorage.getItem('batroukh_dishes_v2');
@@ -43,7 +53,7 @@ export default function App() {
     }
   });
 
-  // Store settings
+  // Store settings (synchronized live with Cloud Firestore)
   const [storeSettings, setStoreSettings] = useState<StoreSettings>(() => {
     try {
       const saved = localStorage.getItem('batroukh_store_settings');
@@ -53,7 +63,7 @@ export default function App() {
     }
   });
 
-  // Cart State
+  // Cart State (Local for current shopper)
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem('batroukh_cart');
@@ -73,7 +83,7 @@ export default function App() {
     }
   });
 
-  // Orders History
+  // Orders History (synchronized live with Cloud Firestore)
   const [ordersHistory, setOrdersHistory] = useState<ActiveOrder[]>(() => {
     try {
       const saved = localStorage.getItem('batroukh_orders_history');
@@ -82,6 +92,9 @@ export default function App() {
       return [];
     }
   });
+
+  // Cloud status flag
+  const [isCloudConnected, setIsCloudConnected] = useState<boolean>(true);
 
   // Modals & Drawers state
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
@@ -94,23 +107,61 @@ export default function App() {
   const [logoClickCount, setLogoClickCount] = useState<number>(0);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Persist dishes
+  // 1. Subscribe to Live Cloud Firestore Dishes
   useEffect(() => {
-    try {
-      localStorage.setItem('batroukh_dishes_v2', JSON.stringify(dishes));
-    } catch {
-      // ignore
-    }
-  }, [dishes]);
+    const unsubscribe = subscribeToDishes((liveDishes) => {
+      if (liveDishes && liveDishes.length > 0) {
+        setDishes(liveDishes);
+        try {
+          localStorage.setItem('batroukh_dishes_v2', JSON.stringify(liveDishes));
+        } catch {
+          // ignore
+        }
+      }
+    }, MENU_ITEMS);
 
-  // Persist store settings
+    return () => unsubscribe();
+  }, []);
+
+  // 2. Subscribe to Live Cloud Firestore Store Settings
   useEffect(() => {
-    try {
-      localStorage.setItem('batroukh_store_settings', JSON.stringify(storeSettings));
-    } catch {
-      // ignore
-    }
-  }, [storeSettings]);
+    const unsubscribe = subscribeToStoreSettings((liveSettings) => {
+      if (liveSettings) {
+        setStoreSettings(liveSettings);
+        try {
+          localStorage.setItem('batroukh_store_settings', JSON.stringify(liveSettings));
+        } catch {
+          // ignore
+        }
+      }
+    }, DEFAULT_STORE_SETTINGS);
+
+    return () => unsubscribe();
+  }, []);
+
+  // 3. Subscribe to Live Cloud Firestore Orders
+  useEffect(() => {
+    const unsubscribe = subscribeToOrders((liveOrders) => {
+      if (liveOrders) {
+        setOrdersHistory(liveOrders);
+        try {
+          localStorage.setItem('batroukh_orders_history', JSON.stringify(liveOrders));
+        } catch {
+          // ignore
+        }
+
+        // Also update active order if its status changed in cloud by admin
+        if (activeOrder) {
+          const updatedActive = liveOrders.find((o) => o.id === activeOrder.id);
+          if (updatedActive && updatedActive.currentStage !== activeOrder.currentStage) {
+            setActiveOrder(updatedActive);
+          }
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [activeOrder]);
 
   // Persist cart
   useEffect(() => {
@@ -133,15 +184,6 @@ export default function App() {
       // ignore
     }
   }, [activeOrder]);
-
-  // Persist orders history
-  useEffect(() => {
-    try {
-      localStorage.setItem('batroukh_orders_history', JSON.stringify(ordersHistory));
-    } catch {
-      // ignore
-    }
-  }, [ordersHistory]);
 
   // Secret 5-tap handler on Logo
   const handleLogoTap = () => {
@@ -239,24 +281,36 @@ export default function App() {
     setCartItems([]);
   };
 
-  const handleOrderPlaced = (newOrder: ActiveOrder) => {
+  // Place order: save to local state AND push to Firebase Cloud Firestore
+  const handleOrderPlaced = async (newOrder: ActiveOrder) => {
     setActiveOrder(newOrder);
-    setOrdersHistory((prev) => [newOrder, ...prev.slice(0, 49)]); // keep last 50 orders
+    setOrdersHistory((prev) => [newOrder, ...prev.slice(0, 49)]);
     setCartItems([]);
     setSelectedInvoiceOrder(newOrder);
     setIsInvoiceModalOpen(true);
+
+    try {
+      await saveOrderToCloud(newOrder);
+    } catch (err) {
+      console.warn('Order saved locally, cloud sync error:', err);
+    }
   };
 
-  const handleUpdateOrderStatusStage = (newStage: OrderProgressStage) => {
+  // Update order status: update in Cloud Firestore
+  const handleUpdateOrderStatusStage = async (newStage: OrderProgressStage) => {
     if (!activeOrder) return;
-    setActiveOrder((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        currentStage: newStage,
-        stageUpdatedAt: Date.now(),
-      };
-    });
+    const updated = {
+      ...activeOrder,
+      currentStage: newStage,
+      stageUpdatedAt: Date.now(),
+    };
+    setActiveOrder(updated);
+
+    try {
+      await updateOrderStatusInCloud(activeOrder.id, newStage);
+    } catch (err) {
+      console.warn('Status updated locally, cloud error:', err);
+    }
   };
 
   const handleStartNewOrder = () => {
@@ -272,6 +326,43 @@ export default function App() {
     setIsInvoiceModalOpen(true);
   };
 
+  // Cloud Dishes Handlers for Admin
+  const handleUpdateDishes = async (updatedDishes: Dish[]) => {
+    setDishes(updatedDishes);
+  };
+
+  const handleSaveSingleDish = async (dish: Dish) => {
+    // Optimistic update
+    setDishes((prev) => {
+      const idx = prev.findIndex((d) => d.id === dish.id);
+      if (idx > -1) {
+        const copy = [...prev];
+        copy[idx] = dish;
+        return copy;
+      }
+      return [dish, ...prev];
+    });
+    // Cloud Firestore save
+    await saveDishToCloud(dish);
+  };
+
+  const handleDeleteSingleDish = async (dishId: string) => {
+    // Optimistic update
+    setDishes((prev) => prev.filter((d) => d.id !== dishId));
+    // Cloud Firestore delete
+    await deleteDishFromCloud(dishId);
+  };
+
+  const handleResetDishes = async () => {
+    setDishes(MENU_ITEMS);
+    await resetDishesInCloud(MENU_ITEMS);
+  };
+
+  const handleUpdateStoreSettings = async (settings: StoreSettings) => {
+    setStoreSettings(settings);
+    await saveStoreSettingsToCloud(settings);
+  };
+
   const scrollToSection = (sectionId: string) => {
     const el = document.getElementById(sectionId);
     if (el) {
@@ -282,9 +373,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#050A18] text-white font-['Cairo',sans-serif] selection:bg-orange-500 selection:text-white relative">
       
-      {/* Intro Egyptian Audio & Slogan Splash */}
-      <IntroAudioSplash onComplete={() => {}} />
-
       {/* Announcement Ticker Bar */}
       {storeSettings.bannerAnnouncement && (
         <div className="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white text-xs font-bold py-1.5 px-4 text-center overflow-hidden border-b border-orange-500/30">
@@ -301,7 +389,6 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         onOpenOrderStatus={() => setIsOrderStatusModalOpen(true)}
         onLogoClick={handleLogoTap}
-        logoClickCount={logoClickCount}
         onOpenAdmin={() => setIsAdminDashboardOpen(true)}
         storeSettings={storeSettings}
       />
@@ -321,7 +408,7 @@ export default function App() {
           onOpenCart={() => setIsCartOpen(true)}
         />
 
-        {/* 3. Interactive Menu Section (with dynamic dishes) */}
+        {/* 3. Interactive Menu Section (with dynamic live dishes from Cloud Firestore) */}
         <MenuSection
           dishes={dishes}
           onAddToCart={handleAddToCart}
@@ -347,7 +434,6 @@ export default function App() {
       {/* Footer with Secret Admin access & Official Social links */}
       <Footer
         onLogoClick={handleLogoTap}
-        logoClickCount={logoClickCount}
         onOpenAdmin={() => setIsAdminDashboardOpen(true)}
       />
 
@@ -379,17 +465,19 @@ export default function App() {
         onNewOrder={handleStartNewOrder}
       />
 
-      {/* Secret Encrypted Admin Dashboard (Password: بطروخ / 5 Clicks on Logo) */}
+      {/* Secret Encrypted Admin Dashboard (Connected to Firebase Cloud Firestore) */}
       <AdminDashboardModal
         isOpen={isAdminDashboardOpen}
         onClose={() => setIsAdminDashboardOpen(false)}
         dishes={dishes}
-        onUpdateDishes={setDishes}
-        onResetDishes={() => setDishes(MENU_ITEMS)}
+        onUpdateDishes={handleUpdateDishes}
+        onSaveSingleDish={handleSaveSingleDish}
+        onDeleteSingleDish={handleDeleteSingleDish}
+        onResetDishes={handleResetDishes}
         activeOrder={activeOrder}
         ordersHistory={ordersHistory}
         storeSettings={storeSettings}
-        onUpdateStoreSettings={setStoreSettings}
+        onUpdateStoreSettings={handleUpdateStoreSettings}
         onViewInvoice={handleViewInvoice}
       />
 

@@ -46,11 +46,11 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({
       `🔥 *الإجمالي النهائي للدفع:* *${order.netTotal} جنيه مصري*`,
       `══════════════════════════`,
       `✨ *مطعم بطروخ هيخليك صاروخ!* 🚀`,
-      `📍 الدقي - شارع التحرير | الخط الساخن: 01023456789`,
+      `📍 الدقي - شارع التحرير | الخط الساخن: +201012560054`,
     ].filter(Boolean);
 
     const message = encodeURIComponent(lines.join('\n'));
-    window.open(`https://wa.me/201023456789?text=${message}`, '_blank');
+    window.open(`https://wa.me/201012560054?text=${message}`, '_blank');
   };
 
   return (
@@ -90,7 +90,7 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({
                 سجل تجاري وبطاقة ضريبية معتمدة | الدقي، الجيزة
               </p>
               <p className="text-[11px] text-slate-600 font-mono">
-                📞 الخط الساخن: 01023456789
+                📞 الخط الساخن: +201012560054
               </p>
             </div>
 

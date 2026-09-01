@@ -5,8 +5,8 @@ export const SOCIAL_LINKS = {
   instagram: 'https://www.instagram.com/batr_okh?igsh=Z2ZtM2Z1MDdrOW5w&utm_source=qr',
   tiktok: 'https://www.tiktok.com/@batroukh25',
   youtube: 'https://www.youtube.com/channel/UCQe8a9bCqhz85jkyrrWGp3g',
-  hotline: 'tel:01023456789',
-  whatsapp: 'https://wa.me/201023456789',
+  hotline: 'tel:+201012560054',
+  whatsapp: 'https://wa.me/201012560054',
 };
 
 interface SocialLinksProps {

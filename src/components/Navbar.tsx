@@ -11,7 +11,6 @@ interface NavbarProps {
   onOpenCart: () => void;
   onOpenOrderStatus?: () => void;
   onLogoClick: () => void;
-  logoClickCount: number;
   onOpenAdmin: () => void;
   storeSettings?: StoreSettings;
 }
@@ -22,7 +21,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCart,
   onOpenOrderStatus,
   onLogoClick,
-  logoClickCount,
   onOpenAdmin,
   storeSettings,
 }) => {
@@ -95,10 +93,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <a
               id="topbar-call-link"
-              href={`tel:${storeSettings?.hotline || '01023456789'}`}
+              href={`tel:${storeSettings?.hotline || '+201012560054'}`}
               className="text-white/90 hover:text-orange-400 font-bold transition-colors font-mono"
             >
-              الخط الساخن: {storeSettings?.hotline || '01023456789'} 📞
+              الخط الساخن: {storeSettings?.hotline || '+201012560054'} 📞
             </a>
           </div>
         </div>
@@ -107,13 +105,12 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between">
           
-          {/* Brand Logo & Slogan with Secret 5-Click Admin Trigger */}
+          {/* Brand Logo & Slogan */}
           <div className="flex items-center gap-2">
             <BatroukhLogo
               size={isScrolled ? 'sm' : 'md'}
               showSubtitle={true}
               onClick={onLogoClick}
-              clickCount={logoClickCount}
             />
           </div>
 
@@ -163,12 +160,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Quick Call Button */}
             <a
               id="nav-direct-call-btn"
-              href={`tel:${storeSettings?.hotline || '01023456789'}`}
+              href={`tel:${storeSettings?.hotline || '+201012560054'}`}
               className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white text-xs sm:text-sm font-medium transition-all shadow-sm font-mono"
               title="اتصل بالفرع مباشرة"
             >
               <Phone className="w-4 h-4 text-orange-500" />
-              <span>{storeSettings?.hotline || '01023456789'}</span>
+              <span>{storeSettings?.hotline || '+201012560054'}</span>
             </a>
 
             {/* Cart Drawer Trigger */}
@@ -235,11 +232,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
 
               <a
-                href={`tel:${storeSettings?.hotline || '01023456789'}`}
+                href={`tel:${storeSettings?.hotline || '+201012560054'}`}
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-white/10 text-white font-bold text-sm font-mono"
               >
                 <Phone className="w-4 h-4 text-orange-500" />
-                <span>اتصال بالفرع: {storeSettings?.hotline || '01023456789'}</span>
+                <span>اتصال بالفرع: {storeSettings?.hotline || '+201012560054'}</span>
               </a>
             </div>
           </div>
